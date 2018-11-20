@@ -9,6 +9,10 @@
     //for example values[0] hold the values for the variable contained in sym[0][]
     int values[1000];
 
+    float ifOpValues[1000];
+
+    int currentIfOp = 0;
+
     int current = 0;
 
     char dump;
@@ -23,6 +27,9 @@
     int wasItDeclaredBefore(char string[1000]);
     int matchStrings(char string1[1000], char string2[1000]);
     int getIndexNumber(char string[1000]);
+    void pushIfOpValues(float );
+    void resetIfOpValues();
+    void printIfOpValues();
 
     extern void yyerror(const char *);
     extern int yylex();
@@ -35,9 +42,10 @@
 }
 
 %start program
-%token <double_val> ADD SUB MUL DIV END VAL LFB RFB PRINT EQUAL DEC COM ALL
+%token <double_val> ADD SUB MUL DIV GRE LES GEQ LEQ END VAL LFB RFB PRINT EQUAL DEC COM ALL IIF STMT EIF NDF LTB RTB DFLT
 %token <input_var_string>   VAR
 %type <double_val> expression
+%type <double_val> ifelse
 
 %%
 
@@ -47,12 +55,17 @@ program: program root_node
 
 root_node: expression END                                       { printf("Expression: %f\n", $1); }
          | statement END                                        { ; }
+         | ifelse
          ;
 
-expression: expression ADD expression                           { $$ = $1 + $3; }
+expression: expression GRE expression                           { $$ = $1 > $3; }
+          | expression LES expression                           { $$ = $1 < $3; }
+          | expression GEQ expression                           { $$ = $1 >= $3; }
+          | expression LEQ expression                           { $$ = $1 <= $3; }
+          | expression ADD expression                           { $$ = $1 + $3; }
           | expression SUB expression                           { $$ = $1 - $3; }
           | expression DIV expression                           { $$ = $1 / $3; }
-          | expression MUL expression                           { $$ = $1  *$3; }
+          | expression MUL expression                           { $$ = $1 * $3; }
           | LFB expression RFB                                  { $$ = $2; }
           | VAL                                                 { $$ = $1; }
           ;
@@ -127,7 +140,7 @@ statement: VAR EQUAL expression                                 {
                                                                     }
                                                                     printf("\n\n");
                                                                 }
-         | declaration                                          
+         | declaration                                  
          ;
 
 declaration: DEC vari                                           
@@ -157,6 +170,36 @@ vari: vari COM vari                                             {printf("Multipl
                                                                     } 
                                                                 }
     ;
+
+ifelse: IIF LTB expression RTB ifelse                           {
+                                                                    printf("Condition Result: %f\n",$3);
+                                                                    if($3)
+                                                                    {
+                                                                        printIfOpValues();
+                                                                    }
+                                                                    resetIfOpValues();
+                                                                }
+      | IIF LTB expression RTB STMT expression END EIF LTB expression RTB STMT expression END DFLT LTB RTB STMT expression NDF {
+
+                                                                    if($3)
+                                                                    {
+                                                                        printf("IF \nCondition Result: %f\nExpression Result: %f\n", $3, $6);
+                                                                    }
+                                                                    else if($10)
+                                                                    {
+                                                                        printf("ELSE IF \nCondition Result: %f\nExpression Result: %f\n", $10, $13);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        printf("DEFAULT \nExpression Result: %f\n", $19);
+                                                                    }
+
+                                                                }       
+      | STMT expression END ifelse                              {
+                                                                    pushIfOpValues($2);
+                                                                }
+      | NDF
+      ;
 
 %%
 
@@ -242,3 +285,23 @@ int getIndexNumber(char string[1000])
     }
 }
 
+void pushIfOpValues(float value)
+{
+    ifOpValues[currentIfOp] = value;
+    currentIfOp++;
+}
+
+void printIfOpValues()
+{
+    int i;
+    for( i = currentIfOp-1; i >= 0; i--)
+    {
+        printf("%f\n",ifOpValues[i]);
+    }
+}
+
+void resetIfOpValues()
+{
+    memset(&ifOpValues[0], 0, sizeof(ifOpValues));
+    currentIfOp = 0;
+}

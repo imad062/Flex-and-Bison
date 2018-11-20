@@ -35,6 +35,10 @@
 "<->"                           {printf("SUB\n"); return SUB;}
 "<*>"                           {printf("MUL\n"); return MUL;}
 "</>"                           {printf("DIV\n"); return DIV;}
+"<>>"                           {printf("GRE\n"); return GRE;}
+"<<>"                           {printf("LES\n"); return LES;}
+"<>=>"                          {printf("GEQ\n"); return GEQ;}
+"<<=>"                          {printf("LEQ\n"); return LEQ;}
 "<=>"                           {printf("EQUAL\n"); return EQUAL;}
 "<;>"                           {printf("END\n"); return END;}
 "<(>"                           {printf("LFB\n"); return LFB;}
@@ -42,7 +46,13 @@
 ", "                            {printf("COM\n"); return COM;}
 "<print>"                       {printf("PRINT\n"); return PRINT;}
 "<all>"                         {printf("ALL\n"); return ALL;}
-
+"<iif>"                         {printf("IIF\n"); return IIF;}
+">>"                            {printf("STMT\n"); return STMT;}
+"<eif>"                         {printf("EIF\n"); return EIF;}
+"<dflt>"                        {printf("DFLT\n"); return DFLT;}
+"<ndf>"                         {printf("NDF\n"); return NDF;}
+"["                             {printf("LTB\n"); return LTB;}
+"]"                             {printf("RTB\n"); return RTB;}
 [0-9]+[A-Za-z0-9_]+             {printf("SyntaxError: Invalid Variable Name \n");}
 [ \n\t]                         { ;}
 

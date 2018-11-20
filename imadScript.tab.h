@@ -49,16 +49,27 @@ extern int yydebug;
     SUB = 259,
     MUL = 260,
     DIV = 261,
-    END = 262,
-    VAL = 263,
-    LFB = 264,
-    RFB = 265,
-    PRINT = 266,
-    EQUAL = 267,
-    DEC = 268,
-    COM = 269,
-    ALL = 270,
-    VAR = 271
+    GRE = 262,
+    LES = 263,
+    GEQ = 264,
+    LEQ = 265,
+    END = 266,
+    VAL = 267,
+    LFB = 268,
+    RFB = 269,
+    PRINT = 270,
+    EQUAL = 271,
+    DEC = 272,
+    COM = 273,
+    ALL = 274,
+    IIF = 275,
+    STMT = 276,
+    EIF = 277,
+    NDF = 278,
+    LTB = 279,
+    RTB = 280,
+    DFLT = 281,
+    VAR = 282
   };
 #endif
 
@@ -67,13 +78,13 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 31 "imadScript.y" /* yacc.c:1919  */
+#line 38 "imadScript.y" /* yacc.c:1919  */
 
     int int_val;
     double double_val;
     char input_var_string[1000];
 
-#line 77 "imadScript.tab.h" /* yacc.c:1919  */
+#line 88 "imadScript.tab.h" /* yacc.c:1919  */
 };
 
 typedef union YYSTYPE YYSTYPE;
