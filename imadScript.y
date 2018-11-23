@@ -42,10 +42,9 @@
 }
 
 %start program
-%token <double_val> ADD SUB MUL DIV GRE LES GEQ LEQ END VAL LFB RFB PRINT EQUAL DEC COM ALL IIF STMT EIF NDF LTB RTB DFLT
+%token <double_val> ADD SUB MUL DIV GRE LES GEQ LEQ END VAL LFB RFB PRINT EQUAL DEC COM ALL IIF STMT EIF NDF LTB RTB DFLT MAT CAS LOOP LEND IN TO
 %token <input_var_string>   VAR
-%type <double_val> expression
-%type <double_val> ifelse
+%type <double_val> expression ifelse
 
 %%
 
@@ -56,6 +55,8 @@ program: program root_node
 root_node: expression END                                       { printf("Expression: %f\n", $1); }
          | statement END                                        { ; }
          | ifelse
+         | forloop
+         | switch
          ;
 
 expression: expression GRE expression                           { $$ = $1 > $3; }
@@ -179,7 +180,7 @@ ifelse: IIF LTB expression RTB ifelse                           {
                                                                     }
                                                                     resetIfOpValues();
                                                                 }
-      | IIF LTB expression RTB STMT expression END EIF LTB expression RTB STMT expression END DFLT LTB RTB STMT expression NDF {
+      | IIF LTB expression RTB STMT expression END EIF LTB expression RTB STMT expression END DFLT LTB RTB STMT expression END NDF {
 
                                                                     if($3)
                                                                     {
@@ -200,6 +201,46 @@ ifelse: IIF LTB expression RTB ifelse                           {
                                                                 }
       | NDF
       ;
+
+forloop: LOOP VAR IN VAL TO VAL STMT expression END LEND        {
+                                                                    int result = wasItDeclaredBefore($2);
+                                                                    if(result)
+                                                                    {
+                                                                        int index = getIndexNumber($2);
+                                                                        float expressionResult = $8;
+                                                                        int i;
+                                                                        printf("Exp: %f",$8);
+                                                                        if($4 < $6)
+                                                                        {
+                                                                            for(i = $4; i <= $6; i++)
+                                                                            {
+                                                                                printf("Expression Result: %f\n",expressionResult);
+                                                                                printf("Variable Value: %d\n", i);
+                                                                                values[index] = i;
+                                                                            }
+                                                                        }
+                                                                        else if($4 > $6)
+                                                                        {
+                                                                            for(i = $6; i >= $4; i--)
+                                                                            {
+                                                                                printf("Expression Result: %f\n",expressionResult);
+                                                                                printf("Variable Value: %d\n", i);
+                                                                                values[index] = i;
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            printf("Expression Result: %f\n",expressionResult);
+                                                                            printf("Variable Value: %d\n", $4);
+                                                                            values[index] = $4;
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        printf("Variable in loop not declared before\n");
+                                                                    }
+                                                                }
+       ;
 
 %%
 

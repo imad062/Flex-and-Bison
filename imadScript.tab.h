@@ -69,7 +69,13 @@ extern int yydebug;
     LTB = 279,
     RTB = 280,
     DFLT = 281,
-    VAR = 282
+    MAT = 282,
+    CAS = 283,
+    LOOP = 284,
+    LEND = 285,
+    IN = 286,
+    TO = 287,
+    VAR = 288
   };
 #endif
 
@@ -84,7 +90,7 @@ union YYSTYPE
     double double_val;
     char input_var_string[1000];
 
-#line 88 "imadScript.tab.h" /* yacc.c:1919  */
+#line 94 "imadScript.tab.h" /* yacc.c:1919  */
 };
 
 typedef union YYSTYPE YYSTYPE;

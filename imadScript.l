@@ -49,10 +49,18 @@
 "<iif>"                         {printf("IIF\n"); return IIF;}
 ">>"                            {printf("STMT\n"); return STMT;}
 "<eif>"                         {printf("EIF\n"); return EIF;}
-"<dflt>"                        {printf("DFLT\n"); return DFLT;}
 "<ndf>"                         {printf("NDF\n"); return NDF;}
 "["                             {printf("LTB\n"); return LTB;}
 "]"                             {printf("RTB\n"); return RTB;}
+"<match>"                       {printf("MAT\n"); return MAT;}
+"<:>"                           {printf("COL\n"); return COL;}
+"<?>"                           {printf("CAS\n"); return CAS;}
+"<dflt>"                        {printf("DFLT\n"); return DFLT;}
+"<loop>"                        {printf("LOOP\n"); return LOOP;}
+"<nmtch>"                       {printf("NMAT\n"); return NMAT;}
+"<in>"                          {printf("IN\n"); return IN;}
+"<..>"                          {printf("TO\n"); return TO;}
+"<lend>"                        {printf("LEND\n"); return LEND;}
 [0-9]+[A-Za-z0-9_]+             {printf("SyntaxError: Invalid Variable Name \n");}
 [ \n\t]                         { ;}
 
