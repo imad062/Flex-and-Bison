@@ -75,7 +75,10 @@ extern int yydebug;
     LEND = 285,
     IN = 286,
     TO = 287,
-    VAR = 288
+    NCAS = 288,
+    NMAT = 289,
+    COL = 290,
+    VAR = 291
   };
 #endif
 
@@ -84,13 +87,13 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 38 "imadScript.y" /* yacc.c:1919  */
+#line 41 "imadScript.y" /* yacc.c:1919  */
 
     int int_val;
     double double_val;
     char input_var_string[1000];
 
-#line 94 "imadScript.tab.h" /* yacc.c:1919  */
+#line 97 "imadScript.tab.h" /* yacc.c:1919  */
 };
 
 typedef union YYSTYPE YYSTYPE;

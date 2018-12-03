@@ -7,7 +7,7 @@
     char sym[1000][1000];
     //values hold the corresponding values of variables according to index
     //for example values[0] hold the values for the variable contained in sym[0][]
-    int values[1000];
+    double values[1000];
 
     float ifOpValues[1000];
 
@@ -23,6 +23,9 @@
     int choice;
 
     int matchedStringValue = 0;
+
+    double switchValue = 0;
+    int printedCaseBefore = 0;
 
     int wasItDeclaredBefore(char string[1000]);
     int matchStrings(char string1[1000], char string2[1000]);
@@ -42,7 +45,7 @@
 }
 
 %start program
-%token <double_val> ADD SUB MUL DIV GRE LES GEQ LEQ END VAL LFB RFB PRINT EQUAL DEC COM ALL IIF STMT EIF NDF LTB RTB DFLT MAT CAS LOOP LEND IN TO
+%token <double_val> ADD SUB MUL DIV GRE LES GEQ LEQ END VAL LFB RFB PRINT EQUAL DEC COM ALL IIF STMT EIF NDF LTB RTB DFLT MAT CAS LOOP LEND IN TO NCAS NMAT COL
 %token <input_var_string>   VAR
 %type <double_val> expression ifelse
 
@@ -65,10 +68,37 @@ expression: expression GRE expression                           { $$ = $1 > $3; 
           | expression LEQ expression                           { $$ = $1 <= $3; }
           | expression ADD expression                           { $$ = $1 + $3; }
           | expression SUB expression                           { $$ = $1 - $3; }
-          | expression DIV expression                           { $$ = $1 / $3; }
+          | expression DIV expression                           { 
+                                                                  if($3 == 0)
+                                                                  {
+                                                                      printf("ERROR: Divide By Zero Error\n");
+                                                                      exit(0);
+                                                                  } 
+                                                                  $$ = $1 / $3;
+                                                                }
           | expression MUL expression                           { $$ = $1 * $3; }
           | LFB expression RFB                                  { $$ = $2; }
           | VAL                                                 { $$ = $1; }
+          | VAR                                                 {
+                                                                    int result;
+                                                                    result = wasItDeclaredBefore($1);
+                                                                    int indexOfVar;
+                                                                    int valueOfVar = 0;
+                                                                    if(result == 0)
+                                                                    {
+                                                                        printf("ERROR: Wasn't declared before\n");
+                                                                        exit(0);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        printf("Declared Before\n");
+
+                                                                        indexOfVar = getIndexNumber($1);
+                                                                        valueOfVar = values[indexOfVar];
+                                                                    }
+                                                                    
+                                                                    $$ = valueOfVar;
+                                                                }
           ;
 
 statement: VAR EQUAL expression                                 {
@@ -78,7 +108,8 @@ statement: VAR EQUAL expression                                 {
 
                                                                     if(result == 0)
                                                                     {
-                                                                        printf("Wasn't declared before\n");
+                                                                        printf("ERROR: Wasn't declared before\n");
+                                                                        exit(0);
                                                                     }
                                                                     else{
                                                                         printf("declared before\n");
@@ -98,7 +129,6 @@ statement: VAR EQUAL expression                                 {
                                                                     if(result1 == 0)
                                                                     {
                                                                         printf("Wasn't declared before\n");
-                                                                        
                                                                     }
                                                                     else{
                                                                         //this works because wasItDeclaredBefore automatically sets 
@@ -107,37 +137,12 @@ statement: VAR EQUAL expression                                 {
                                                                         printf("Var value: %d\n", matchedStringValue);
                                                                     }    
                                                                 }
-         | VAR EQUAL VAR                                        {
-                                                                    int result1;
-                                                                    result1 = wasItDeclaredBefore($1);
-
-                                                                    int result2;
-                                                                    result2 = wasItDeclaredBefore($3);
-
-                                                                    if(result1 == 0)
-                                                                    {
-                                                                        printf("%s not declared before\n",$1);
-                                                                    }
-                                                                    else if(result2 == 0)
-                                                                    {
-                                                                        printf("%s not declared before\n",$3);
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        int indexOfRight = getIndexNumber($3);
-                                                                        int indexOfLeft = getIndexNumber($1);
-
-                                                                        values[indexOfLeft] = values[indexOfRight];
-                                                                    }
-
-                                                                
-                                                                }
          | PRINT ALL                                            {
                                                                     printf("Printing symbol and value table:\n\n");
                                                                     int i;
                                                                     for(i = 0; i < current; i++)
                                                                     {
-                                                                        printf("Variable: %s    Value: %d \n",sym[i], values[i]);
+                                                                        printf("Variable: %s    Value: %f \n",sym[i], values[i]);
                                                                     }
                                                                     printf("\n\n");
                                                                 }
@@ -151,7 +156,9 @@ vari: vari COM vari                                             {printf("Multipl
     | VAR                                                       {
                                                                     int result;
                                                                     result = wasItDeclaredBefore($1);
-                                                                    printf("$1: %s\n",$1);
+                                                                    
+                                                                    printf("VarName: %s\n",$1);
+                                                                    
                                                                     if(result == 0)
                                                                     {
                                                                         printf("Wasn't declared before\n");
@@ -173,14 +180,115 @@ vari: vari COM vari                                             {printf("Multipl
     ;
 
 ifelse: IIF LTB expression RTB ifelse                           {
-                                                                    printf("Condition Result: %f\n",$3);
+                                                                    //single if structure
+                                                                    printf("Value of Argument: %f\n",$3);
                                                                     if($3)
                                                                     {
+                                                                        printf("Value of expressions: \n");
                                                                         printIfOpValues();
                                                                     }
                                                                     resetIfOpValues();
                                                                 }
-      | IIF LTB expression RTB STMT expression END EIF LTB expression RTB STMT expression END DFLT LTB RTB STMT expression END NDF {
+      | IIF LTB expression RTB STMT expression END DFLT STMT expression END NDF {
+
+                                                                    //if-else structure
+                                                                    if($3)
+                                                                    {
+                                                                        printf("Inside if Structure\n");
+                                                                        printf("Value of Argument: %f\n", $3);
+                                                                        printf("Value of expression: %f\n",$6);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        printf("Inside if -> default structure\n");
+                                                                        printf("Value of expression: %f\n", $10);
+                                                                    }
+                                                                }
+      | IIF LTB expression RTB IIF LTB expression RTB STMT expression END DFLT STMT expression END DFLT STMT expression END NDF {
+                                                                    //if (nested if-else) - else structure
+                                                                    if($3)
+                                                                    {
+                                                                        printf("Inside if structure\n");
+                                                                        printf("Value of Argument: %f\n", $3);
+                                                                        if($8)
+                                                                        {
+                                                                            printf("Inside if->if structure\n");
+                                                                            printf("Value of Argument: %f\n", $7);
+                                                                            printf("Value of Expression: %f\n", $10);
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            printf("Inside if -> (if -> else) structure\n");
+                                                                            printf("Value of expression: %f", $14);
+                                                                            
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        printf("Inside if -> (if -> else) -> else structure\n");
+                                                                        printf("Value of expression: %f", $18);
+                                                                    }
+                                                                }
+      | IIF LTB expression RTB STMT expression END DFLT IIF LTB expression RTB STMT expression END DFLT STMT expression END NDF {
+                                                                    //if - else ( nested if-else ) structure
+                                                                    if($3)
+                                                                    {
+                                                                        printf("Inside if structure\n");
+                                                                        printf("Value of Argument: %f\n", $3);
+                                                                        printf("Value of expression: %f\n", $6);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        
+                                                                        if($11)
+                                                                        {
+                                                                            printf("Inside if -> else -> if structure\n");
+                                                                            printf("Value of Argument: %f\n", $11);
+                                                                            printf("Value of Expression: %f\n", $14);
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            printf("Inside if -> else -> (if -> else) structure\n");
+                                                                            printf("Value of expression: %f", $18);
+                                                                            
+                                                                        }
+                                                                    }
+                                                                }
+      | IIF LTB expression RTB IIF LTB expression RTB STMT expression END DFLT STMT expression END DFLT IIF LTB expression RTB STMT expression END DFLT STMT expression END NDF {
+
+                                                                    if($3)
+                                                                    {
+                                                                        printf("Inside if structure\n");
+                                                                        printf("Value of Argument: %f\n",$3);
+                                                                        if($7)
+                                                                        {
+                                                                            printf("Inside if -> if structure\n");
+                                                                            printf("Value of expression: %f\n",$10);
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            printf("Inside if -> if -> else structure\n");
+                                                                            printf("Value of expression: %f\n",$14);
+                                                                        }
+                                                                    }
+                                                                    else 
+                                                                    {
+                                                                        if($19)
+                                                                        {
+                                                                            printf("Inside if -> if -> else -> if structure\n");
+                                                                            printf("Value of argument: %f\n", $19);
+                                                                            printf("Value of expression: %f\n",$22);
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            printf("Inside if -> if -> else -> else -> if ->  else structure\n");
+                                                                            printf("Value of expression: %f\n",$26);
+                                                                        }
+                                                                    }
+
+
+                                                                }
+      | IIF LTB expression RTB STMT expression END EIF LTB expression RTB STMT expression END DFLT STMT expression END NDF {
 
                                                                     if($3)
                                                                     {
@@ -192,7 +300,7 @@ ifelse: IIF LTB expression RTB ifelse                           {
                                                                     }
                                                                     else
                                                                     {
-                                                                        printf("DEFAULT \nExpression Result: %f\n", $19);
+                                                                        printf("DEFAULT \nExpression Result: %f\n", $17);
                                                                     }
 
                                                                 }       
@@ -209,7 +317,9 @@ forloop: LOOP VAR IN VAL TO VAL STMT expression END LEND        {
                                                                         int index = getIndexNumber($2);
                                                                         float expressionResult = $8;
                                                                         int i;
-                                                                        printf("Exp: %f",$8);
+                                                                        
+                                                                        //printf("Exp: %f\n",$8);
+                                                                        
                                                                         if($4 < $6)
                                                                         {
                                                                             for(i = $4; i <= $6; i++)
@@ -231,28 +341,68 @@ forloop: LOOP VAR IN VAL TO VAL STMT expression END LEND        {
                                                                         else
                                                                         {
                                                                             printf("Expression Result: %f\n",expressionResult);
-                                                                            printf("Variable Value: %d\n", $4);
+                                                                            printf("Variable Value: %f\n", $4);
                                                                             values[index] = $4;
                                                                         }
                                                                     }
                                                                     else
                                                                     {
                                                                         printf("Variable in loop not declared before\n");
+                                                                        
                                                                     }
                                                                 }
        ;
+
+switch: MAT VAR COL cases NMAT                                  {
+                                                                    int result;
+                                                                    result = wasItDeclaredBefore($2);
+
+                                                                    if(result == 0)
+                                                                    {
+                                                                        printf("ERROR: wasn't declared before\n");
+                                                                        exit(0);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        int indexOfVar;
+                                                                        printf("Was declared before\n");
+                                                                        indexOfVar = getIndexNumber($2);
+                                                                        switchValue = values[indexOfVar];
+                                                                        printf("Switch Value: %f\n", switchValue);
+                                                                    }
+                                                                }
+      ;
+
+cases: CAS VAL COL STMT expression END NCAS cases               {
+                                                                    if($2 == switchValue && printedCaseBefore == 0)
+                                                                    {
+                                                                        printf("Case Matched: %f\n", $2);
+                                                                        printf("Value of Expression: %f\n", $5);
+                                                                        printedCaseBefore = 1;
+                                                                    }
+                                                                }
+     | DFLT COL STMT expression END NCAS                        {
+                                                                    if(printedCaseBefore == 0)
+                                                                    {
+                                                                        printf("Default case matched\n");
+                                                                        printf("Value of expression: %f\n", $4);
+                                                                    }
+                                                                }
+     ;
 
 %%
 
 int wasItDeclaredBefore(char string[1000])
 {
-    printf("WIDB: ArgumentString: %s %d\n", string, strlen(string));
+    //printf("WIDB: ArgumentString: %s %lu\n", string, strlen(string));
+
     //returns 0 if not delcared before
     //returns 1 if declared before
     int i;
     for(i = 0; i < current; i++)
     {
-        printf("WIDB: symString: %s symLength: %d  Value: %d  i: %d   current: %d\n", sym[i], strlen(sym[i]), values[i], i, current);
+        //printf("WIDB: symString: %s symLength: %lu  Value: %f  i: %d   current: %d\n", sym[i], strlen(sym[i]), values[i], i, current);
+
         if(strlen(string) == strlen(sym[i]))
         {
             int result2;
@@ -311,14 +461,16 @@ int getIndexNumber(char string[1000])
     int i;
     for(int i = 0; i < current; i++)
     {
-        printf("GIN: input: %s  symstr: %s\n",string,sym[i]);
+        //printf("GIN: input: %s  symstr: %s\n",string,sym[i]);
+
         //check if input and sym[i] has same length
         //because, by default matchStrings() takes that its two argument strings have same length
         if(strlen(string) == strlen(sym[i]))
         {
             if(matchStrings(string, sym[i]))
             {
-                printf("GIN: %d\n",i);
+                //printf("GIN: %d\n",i);
+
                 return i;
             }
         }

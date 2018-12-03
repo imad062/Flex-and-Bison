@@ -10,18 +10,18 @@
 
 %%
 
-[0-9]+ {
-        inp = atoi(yytext);
-        if(inp%2 == 0){
-	        printf("EVEN\n");
-	        return EVEN;
-	    }
-	    else{
-	        printf("ODD\n");
-	        return ODD;
-	    }
-    }
-[ \n\t] {;}
+[0-9]+      {
+                inp = atoi(yytext);
+                if(inp%2 == 0){
+                    printf("EVEN\n");
+                    return EVEN;
+                }
+                else{
+                    printf("ODD\n");
+                    return ODD;
+                }
+            }
+[ \n\t]+    {;}
 
 %%
 

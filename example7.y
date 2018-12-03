@@ -44,9 +44,9 @@ expression: LPAREN expression RPAREN	{$$=$2;}
 	  | expression MINUS expression	{$$=$1-$3;}
 	  | expression MUL expression	{$$=$1*$3;}
 	  | expression DIV expression	{$$=$1/$3;}
-          | VAR				{$$=sym[*$1];}
-	  | VAL				{$$=$1;}
-	  | MINUS VAL			{$$=-$2;}
+      | VAR				            {$$=sym[*$1];}
+	  | VAL				            {$$=$1;}
+	  | MINUS VAL			        {$$=-$2;}
 	  ;
 
 statement: VAR EQUAL expression {sym[*$1]=$3;}

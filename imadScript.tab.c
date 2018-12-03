@@ -72,7 +72,7 @@
     char sym[1000][1000];
     //values hold the corresponding values of variables according to index
     //for example values[0] hold the values for the variable contained in sym[0][]
-    int values[1000];
+    double values[1000];
 
     float ifOpValues[1000];
 
@@ -89,6 +89,9 @@
 
     int matchedStringValue = 0;
 
+    double switchValue = 0;
+    int printedCaseBefore = 0;
+
     int wasItDeclaredBefore(char string[1000]);
     int matchStrings(char string1[1000], char string2[1000]);
     int getIndexNumber(char string[1000]);
@@ -99,7 +102,7 @@
     extern void yyerror(const char *);
     extern int yylex();
 
-#line 103 "imadScript.tab.c" /* yacc.c:339  */
+#line 106 "imadScript.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -164,7 +167,10 @@ extern int yydebug;
     LEND = 285,
     IN = 286,
     TO = 287,
-    VAR = 288
+    NCAS = 288,
+    NMAT = 289,
+    COL = 290,
+    VAR = 291
   };
 #endif
 
@@ -173,13 +179,13 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 38 "imadScript.y" /* yacc.c:355  */
+#line 41 "imadScript.y" /* yacc.c:355  */
 
     int int_val;
     double double_val;
     char input_var_string[1000];
 
-#line 183 "imadScript.tab.c" /* yacc.c:355  */
+#line 189 "imadScript.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -196,7 +202,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 200 "imadScript.tab.c" /* yacc.c:358  */
+#line 206 "imadScript.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -436,23 +442,23 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  26
+#define YYFINAL  30
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   178
+#define YYLAST   352
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  34
+#define YYNTOKENS  37
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  9
+#define YYNNTS  11
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  30
+#define YYNRULES  38
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  80
+#define YYNSTATES  144
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   288
+#define YYMAXUTOK   291
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -489,17 +495,18 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29,    30,    31,    32,    33
+      25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
+      35,    36
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_uint8 yyrline[] =
+static const yytype_uint16 yyrline[] =
 {
-       0,    51,    51,    52,    55,    56,    57,    58,    61,    62,
-      63,    64,    65,    66,    67,    68,    69,    70,    73,    92,
-     109,   134,   143,   146,   149,   150,   174,   182,   198,   201,
-     204
+       0,    54,    54,    55,    58,    59,    60,    61,    62,    65,
+      66,    67,    68,    69,    70,    71,    79,    80,    81,    82,
+     104,   124,   140,   149,   152,   155,   156,   182,   192,   207,
+     232,   257,   291,   307,   310,   313,   356,   376,   384
 };
 #endif
 
@@ -511,8 +518,9 @@ static const char *const yytname[] =
   "$end", "error", "$undefined", "ADD", "SUB", "MUL", "DIV", "GRE", "LES",
   "GEQ", "LEQ", "END", "VAL", "LFB", "RFB", "PRINT", "EQUAL", "DEC", "COM",
   "ALL", "IIF", "STMT", "EIF", "NDF", "LTB", "RTB", "DFLT", "MAT", "CAS",
-  "LOOP", "LEND", "IN", "TO", "VAR", "$accept", "program", "root_node",
-  "expression", "statement", "declaration", "vari", "ifelse", "forloop", YY_NULLPTR
+  "LOOP", "LEND", "IN", "TO", "NCAS", "NMAT", "COL", "VAR", "$accept",
+  "program", "root_node", "expression", "statement", "declaration", "vari",
+  "ifelse", "forloop", "switch", "cases", YY_NULLPTR
 };
 #endif
 
@@ -524,14 +532,14 @@ static const yytype_uint16 yytoknum[] =
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
      275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
-     285,   286,   287,   288
+     285,   286,   287,   288,   289,   290,   291
 };
 # endif
 
-#define YYPACT_NINF -31
+#define YYPACT_NINF -22
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-31)))
+  (!!((Yystate) == (-22)))
 
 #define YYTABLE_NINF -1
 
@@ -542,14 +550,21 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      71,   -31,    -3,   -12,   -30,   -13,    -3,   -31,     2,    26,
-      24,   -31,   114,    29,   -31,   -31,   -31,   102,   -31,   -31,
-     -31,    25,    -3,   123,    21,   -11,   -31,   -31,    -3,    -3,
-      -3,    -3,    -3,    -3,    -3,    -3,   -31,   -31,   -31,   -30,
-       9,   -15,    42,   -31,   168,   168,   168,   168,   168,   168,
-     168,   168,   168,    25,    39,   -31,    31,    -3,   -31,    44,
-     132,    37,    28,    -3,    41,   141,    -3,   -31,    72,    45,
-      -3,   150,    43,    46,    47,    50,    -3,   159,    62,   -31
+      -7,   -22,     6,   -12,   -21,    -3,     6,   -22,   -19,     4,
+      32,    26,   -22,   198,    39,   -22,   -22,   -22,   -22,   -22,
+     183,   -22,   -22,   -22,    38,     6,   207,    33,    30,     6,
+     -22,   -22,     6,     6,     6,     6,     6,     6,     6,     6,
+     -22,   -22,   -22,   -21,    93,    31,   -17,    72,   342,   342,
+     342,   342,   342,   342,   342,   342,   342,    38,    37,   -22,
+      52,    79,    58,    40,    71,     6,   -22,    84,    73,   -22,
+      81,     6,   216,     6,    85,    89,   121,    44,   225,     6,
+       6,    60,    87,   -18,    80,   234,   243,     6,     6,    88,
+       6,   -22,    82,    86,   252,   144,     6,   261,   -17,   -22,
+      53,    98,   152,    91,   -22,    24,     6,   100,   -22,     6,
+     270,     6,   279,   106,   288,     2,   112,   109,    69,     6,
+     115,   113,     6,   297,     6,     6,   306,   116,   315,   175,
+     117,   -22,   118,   122,   -22,   -22,     6,   324,   119,   123,
+       6,   333,   140,   -22
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -557,26 +572,35 @@ static const yytype_int16 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,    17,     0,     0,     0,     0,     0,    29,     0,     0,
-       0,     3,     0,     0,    22,     6,     7,     0,    21,    19,
-      25,    23,     0,     0,     0,     0,     1,     2,     0,     0,
-       0,     0,     0,     0,     0,     0,     4,     5,    16,     0,
-       0,     0,     0,    20,    18,    12,    13,    15,    14,     8,
-       9,    10,    11,    24,     0,    28,     0,     0,    26,     0,
-       0,     0,     0,     0,     0,     0,     0,    30,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,    27
+       0,    18,     0,     0,     0,     0,     0,    34,     0,     0,
+      19,     0,     3,     0,     0,    23,     6,     7,     8,    19,
+       0,    22,    21,    26,    24,     0,     0,     0,     0,     0,
+       1,     2,     0,     0,     0,     0,     0,     0,     0,     0,
+       4,     5,    17,     0,     0,     0,     0,     0,    20,    13,
+      14,    16,    15,     9,    10,    11,    12,    25,     0,    33,
+       0,     0,     0,     0,     0,     0,    27,     0,     0,    36,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,    38,     0,     0,     0,     0,     0,     0,     0,    35,
+       0,     0,     0,     0,    37,     0,     0,     0,    28,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,    32,     0,     0,    29,    30,     0,     0,     0,     0,
+       0,     0,     0,    31
 };
 
   /* YYPGOTO[NTERM-NUM].  */
-static const yytype_int8 yypgoto[] =
+static const yytype_int16 yypgoto[] =
 {
-     -31,   -31,    57,    -2,   -31,   -31,    34,   -16,   -31
+     -22,   -22,   131,    -2,   -22,   -22,   124,     1,   -22,   -22,
+      66
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,    10,    11,    12,    13,    14,    21,    15,    16
+      -1,    11,    12,    13,    14,    15,    24,    59,    17,    18,
+      62
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -584,78 +608,121 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-      17,     1,     2,    20,    23,     5,     6,    18,     7,     1,
-       2,    22,    28,    29,    30,    31,    32,    33,    34,    35,
-      40,    19,    43,    44,    26,    55,    45,    46,    47,    48,
-      49,    50,    51,    52,    54,    24,     1,     2,    58,     3,
-      37,     4,    25,    39,     5,     6,    55,     7,     5,     6,
-      64,     7,    42,     8,    56,    60,    61,     9,    63,     5,
-      57,    65,     7,    59,    68,    66,    70,    27,    71,    73,
-      74,    76,    75,    53,    77,    28,    29,    30,    31,    32,
-      33,    34,    35,     1,     2,    79,     3,     0,     4,     0,
-       0,     5,     6,     0,     7,     0,     0,    69,     0,     0,
-       8,     0,     0,     0,     9,    28,    29,    30,    31,    32,
-      33,    34,    35,     0,     0,     0,    38,    28,    29,    30,
-      31,    32,    33,    34,    35,    36,    28,    29,    30,    31,
-      32,    33,    34,    35,    41,    28,    29,    30,    31,    32,
-      33,    34,    35,    62,    28,    29,    30,    31,    32,    33,
-      34,    35,    67,    28,    29,    30,    31,    32,    33,    34,
-      35,    72,    28,    29,    30,    31,    32,    33,    34,    35,
-      78,    28,    29,    30,    31,    32,    33,    34,    35
+      20,    16,    89,    90,    26,     1,     2,    21,     3,    60,
+       4,    61,    16,     5,     6,    23,     7,    27,     1,     2,
+       8,    25,     9,    44,    22,   108,    30,    48,   118,    10,
+      49,    50,    51,    52,    53,    54,    55,    56,     1,     2,
+      28,     3,    19,     4,    89,   109,     5,     6,    29,     7,
+      41,     5,     6,     8,     7,     9,    43,    64,    65,    66,
+       7,    47,    10,    72,     5,     6,    82,     7,    46,    76,
+      83,    78,    70,     5,     6,    82,     7,    85,    86,   105,
+      64,    87,    66,     7,    63,    94,    95,    67,    97,   121,
+     122,    68,    69,    75,   102,    71,    32,    33,    34,    35,
+      36,    37,    38,    39,   110,    73,    79,   112,    74,   114,
+      80,    88,    96,    91,   108,    98,    99,   123,    58,   106,
+     126,   111,   128,   129,    32,    33,    34,    35,    36,    37,
+      38,    39,   116,   119,   137,   120,   124,   125,   141,   131,
+     134,   135,    31,   136,   140,   139,    81,    32,    33,    34,
+      35,    36,    37,    38,    39,    32,    33,    34,    35,    36,
+      37,    38,    39,   143,   104,     0,     0,    57,     0,   101,
+       0,     0,     0,     0,     0,     0,     0,   107,    32,    33,
+      34,    35,    36,    37,    38,    39,    32,    33,    34,    35,
+      36,    37,    38,    39,     0,     0,     0,    42,     0,     0,
+     133,    32,    33,    34,    35,    36,    37,    38,    39,    40,
+      32,    33,    34,    35,    36,    37,    38,    39,    45,    32,
+      33,    34,    35,    36,    37,    38,    39,    77,    32,    33,
+      34,    35,    36,    37,    38,    39,    84,    32,    33,    34,
+      35,    36,    37,    38,    39,    92,    32,    33,    34,    35,
+      36,    37,    38,    39,    93,    32,    33,    34,    35,    36,
+      37,    38,    39,   100,    32,    33,    34,    35,    36,    37,
+      38,    39,   103,    32,    33,    34,    35,    36,    37,    38,
+      39,   113,    32,    33,    34,    35,    36,    37,    38,    39,
+     115,    32,    33,    34,    35,    36,    37,    38,    39,   117,
+      32,    33,    34,    35,    36,    37,    38,    39,   127,    32,
+      33,    34,    35,    36,    37,    38,    39,   130,    32,    33,
+      34,    35,    36,    37,    38,    39,   132,    32,    33,    34,
+      35,    36,    37,    38,    39,   138,    32,    33,    34,    35,
+      36,    37,    38,    39,   142,    32,    33,    34,    35,    36,
+      37,    38,    39
 };
 
-static const yytype_int8 yycheck[] =
+static const yytype_int16 yycheck[] =
 {
-       2,    12,    13,    33,     6,    20,    21,    19,    23,    12,
-      13,    24,     3,     4,     5,     6,     7,     8,     9,    10,
-      22,    33,    33,    25,     0,    41,    28,    29,    30,    31,
-      32,    33,    34,    35,    25,    33,    12,    13,    54,    15,
-      11,    17,    16,    18,    20,    21,    62,    23,    20,    21,
-      22,    23,    31,    29,    12,    57,    12,    33,    21,    20,
-      21,    63,    23,    32,    66,    24,    21,    10,    70,    26,
-      24,    21,    25,    39,    76,     3,     4,     5,     6,     7,
-       8,     9,    10,    12,    13,    23,    15,    -1,    17,    -1,
-      -1,    20,    21,    -1,    23,    -1,    -1,    25,    -1,    -1,
-      29,    -1,    -1,    -1,    33,     3,     4,     5,     6,     7,
-       8,     9,    10,    -1,    -1,    -1,    14,     3,     4,     5,
+       2,     0,    20,    21,     6,    12,    13,    19,    15,    26,
+      17,    28,    11,    20,    21,    36,    23,    36,    12,    13,
+      27,    24,    29,    25,    36,    23,     0,    29,    26,    36,
+      32,    33,    34,    35,    36,    37,    38,    39,    12,    13,
+      36,    15,    36,    17,    20,    21,    20,    21,    16,    23,
+      11,    20,    21,    27,    23,    29,    18,    20,    21,    58,
+      23,    31,    36,    65,    20,    21,    22,    23,    35,    71,
+      26,    73,    32,    20,    21,    22,    23,    79,    80,    26,
+      20,    21,    81,    23,    12,    87,    88,    35,    90,    20,
+      21,    12,    34,    12,    96,    24,     3,     4,     5,     6,
+       7,     8,     9,    10,   106,    21,    21,   109,    35,   111,
+      21,    24,    24,    33,    23,    33,    30,   119,    25,    21,
+     122,    21,   124,   125,     3,     4,     5,     6,     7,     8,
+       9,    10,    26,    21,   136,    26,    21,    24,   140,    23,
+      23,    23,    11,    21,    21,    26,    25,     3,     4,     5,
+       6,     7,     8,     9,    10,     3,     4,     5,     6,     7,
+       8,     9,    10,    23,    98,    -1,    -1,    43,    -1,    25,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    25,     3,     4,
+       5,     6,     7,     8,     9,    10,     3,     4,     5,     6,
+       7,     8,     9,    10,    -1,    -1,    -1,    14,    -1,    -1,
+      25,     3,     4,     5,     6,     7,     8,     9,    10,    11,
+       3,     4,     5,     6,     7,     8,     9,    10,    11,     3,
+       4,     5,     6,     7,     8,     9,    10,    11,     3,     4,
+       5,     6,     7,     8,     9,    10,    11,     3,     4,     5,
        6,     7,     8,     9,    10,    11,     3,     4,     5,     6,
        7,     8,     9,    10,    11,     3,     4,     5,     6,     7,
        8,     9,    10,    11,     3,     4,     5,     6,     7,     8,
        9,    10,    11,     3,     4,     5,     6,     7,     8,     9,
       10,    11,     3,     4,     5,     6,     7,     8,     9,    10,
-      11,     3,     4,     5,     6,     7,     8,     9,    10
+      11,     3,     4,     5,     6,     7,     8,     9,    10,    11,
+       3,     4,     5,     6,     7,     8,     9,    10,    11,     3,
+       4,     5,     6,     7,     8,     9,    10,    11,     3,     4,
+       5,     6,     7,     8,     9,    10,    11,     3,     4,     5,
+       6,     7,     8,     9,    10,    11,     3,     4,     5,     6,
+       7,     8,     9,    10,    11,     3,     4,     5,     6,     7,
+       8,     9,    10
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,    12,    13,    15,    17,    20,    21,    23,    29,    33,
-      35,    36,    37,    38,    39,    41,    42,    37,    19,    33,
-      33,    40,    24,    37,    33,    16,     0,    36,     3,     4,
-       5,     6,     7,     8,     9,    10,    11,    11,    14,    18,
-      37,    11,    31,    33,    37,    37,    37,    37,    37,    37,
-      37,    37,    37,    40,    25,    41,    12,    21,    41,    32,
-      37,    12,    11,    21,    22,    37,    24,    11,    37,    25,
-      21,    37,    11,    26,    24,    25,    21,    37,    11,    23
+       0,    12,    13,    15,    17,    20,    21,    23,    27,    29,
+      36,    38,    39,    40,    41,    42,    44,    45,    46,    36,
+      40,    19,    36,    36,    43,    24,    40,    36,    36,    16,
+       0,    39,     3,     4,     5,     6,     7,     8,     9,    10,
+      11,    11,    14,    18,    40,    11,    35,    31,    40,    40,
+      40,    40,    40,    40,    40,    40,    40,    43,    25,    44,
+      26,    28,    47,    12,    20,    21,    44,    35,    12,    34,
+      32,    24,    40,    21,    35,    12,    40,    11,    40,    21,
+      21,    25,    22,    26,    11,    40,    40,    21,    24,    20,
+      21,    33,    11,    11,    40,    40,    24,    40,    33,    30,
+      11,    25,    40,    11,    47,    26,    21,    25,    23,    21,
+      40,    21,    40,    11,    40,    11,    26,    11,    26,    21,
+      26,    20,    21,    40,    21,    24,    40,    11,    40,    40,
+      11,    23,    11,    25,    23,    23,    21,    40,    11,    26,
+      21,    40,    11,    23
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    34,    35,    35,    36,    36,    36,    36,    37,    37,
-      37,    37,    37,    37,    37,    37,    37,    37,    38,    38,
-      38,    38,    38,    39,    40,    40,    41,    41,    41,    41,
-      42
+       0,    37,    38,    38,    39,    39,    39,    39,    39,    40,
+      40,    40,    40,    40,    40,    40,    40,    40,    40,    40,
+      41,    41,    41,    41,    42,    43,    43,    44,    44,    44,
+      44,    44,    44,    44,    44,    45,    46,    47,    47
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     2,     1,     2,     2,     1,     1,     3,     3,
-       3,     3,     3,     3,     3,     3,     3,     1,     3,     2,
-       3,     2,     1,     2,     3,     1,     5,    21,     4,     1,
-       9
+       0,     2,     2,     1,     2,     2,     1,     1,     1,     3,
+       3,     3,     3,     3,     3,     3,     3,     3,     1,     1,
+       3,     2,     2,     1,     2,     3,     1,     5,    12,    20,
+      20,    28,    19,     4,     1,    10,     5,     8,     6
 };
 
 
@@ -1333,79 +1400,111 @@ yyreduce:
   switch (yyn)
     {
         case 4:
-#line 55 "imadScript.y" /* yacc.c:1666  */
+#line 58 "imadScript.y" /* yacc.c:1666  */
     { printf("Expression: %f\n", (yyvsp[-1].double_val)); }
-#line 1339 "imadScript.tab.c" /* yacc.c:1666  */
+#line 1406 "imadScript.tab.c" /* yacc.c:1666  */
     break;
 
   case 5:
-#line 56 "imadScript.y" /* yacc.c:1666  */
+#line 59 "imadScript.y" /* yacc.c:1666  */
     { ; }
-#line 1345 "imadScript.tab.c" /* yacc.c:1666  */
-    break;
-
-  case 8:
-#line 61 "imadScript.y" /* yacc.c:1666  */
-    { (yyval.double_val) = (yyvsp[-2].double_val) > (yyvsp[0].double_val); }
-#line 1351 "imadScript.tab.c" /* yacc.c:1666  */
+#line 1412 "imadScript.tab.c" /* yacc.c:1666  */
     break;
 
   case 9:
-#line 62 "imadScript.y" /* yacc.c:1666  */
-    { (yyval.double_val) = (yyvsp[-2].double_val) < (yyvsp[0].double_val); }
-#line 1357 "imadScript.tab.c" /* yacc.c:1666  */
+#line 65 "imadScript.y" /* yacc.c:1666  */
+    { (yyval.double_val) = (yyvsp[-2].double_val) > (yyvsp[0].double_val); }
+#line 1418 "imadScript.tab.c" /* yacc.c:1666  */
     break;
 
   case 10:
-#line 63 "imadScript.y" /* yacc.c:1666  */
-    { (yyval.double_val) = (yyvsp[-2].double_val) >= (yyvsp[0].double_val); }
-#line 1363 "imadScript.tab.c" /* yacc.c:1666  */
+#line 66 "imadScript.y" /* yacc.c:1666  */
+    { (yyval.double_val) = (yyvsp[-2].double_val) < (yyvsp[0].double_val); }
+#line 1424 "imadScript.tab.c" /* yacc.c:1666  */
     break;
 
   case 11:
-#line 64 "imadScript.y" /* yacc.c:1666  */
-    { (yyval.double_val) = (yyvsp[-2].double_val) <= (yyvsp[0].double_val); }
-#line 1369 "imadScript.tab.c" /* yacc.c:1666  */
+#line 67 "imadScript.y" /* yacc.c:1666  */
+    { (yyval.double_val) = (yyvsp[-2].double_val) >= (yyvsp[0].double_val); }
+#line 1430 "imadScript.tab.c" /* yacc.c:1666  */
     break;
 
   case 12:
-#line 65 "imadScript.y" /* yacc.c:1666  */
-    { (yyval.double_val) = (yyvsp[-2].double_val) + (yyvsp[0].double_val); }
-#line 1375 "imadScript.tab.c" /* yacc.c:1666  */
+#line 68 "imadScript.y" /* yacc.c:1666  */
+    { (yyval.double_val) = (yyvsp[-2].double_val) <= (yyvsp[0].double_val); }
+#line 1436 "imadScript.tab.c" /* yacc.c:1666  */
     break;
 
   case 13:
-#line 66 "imadScript.y" /* yacc.c:1666  */
-    { (yyval.double_val) = (yyvsp[-2].double_val) - (yyvsp[0].double_val); }
-#line 1381 "imadScript.tab.c" /* yacc.c:1666  */
+#line 69 "imadScript.y" /* yacc.c:1666  */
+    { (yyval.double_val) = (yyvsp[-2].double_val) + (yyvsp[0].double_val); }
+#line 1442 "imadScript.tab.c" /* yacc.c:1666  */
     break;
 
   case 14:
-#line 67 "imadScript.y" /* yacc.c:1666  */
-    { (yyval.double_val) = (yyvsp[-2].double_val) / (yyvsp[0].double_val); }
-#line 1387 "imadScript.tab.c" /* yacc.c:1666  */
+#line 70 "imadScript.y" /* yacc.c:1666  */
+    { (yyval.double_val) = (yyvsp[-2].double_val) - (yyvsp[0].double_val); }
+#line 1448 "imadScript.tab.c" /* yacc.c:1666  */
     break;
 
   case 15:
-#line 68 "imadScript.y" /* yacc.c:1666  */
-    { (yyval.double_val) = (yyvsp[-2].double_val) * (yyvsp[0].double_val); }
-#line 1393 "imadScript.tab.c" /* yacc.c:1666  */
+#line 71 "imadScript.y" /* yacc.c:1666  */
+    { 
+                                                                  if((yyvsp[0].double_val) == 0)
+                                                                  {
+                                                                      printf("ERROR: Divide By Zero Error\n");
+                                                                      exit(0);
+                                                                  } 
+                                                                  (yyval.double_val) = (yyvsp[-2].double_val) / (yyvsp[0].double_val);
+                                                                }
+#line 1461 "imadScript.tab.c" /* yacc.c:1666  */
     break;
 
   case 16:
-#line 69 "imadScript.y" /* yacc.c:1666  */
-    { (yyval.double_val) = (yyvsp[-1].double_val); }
-#line 1399 "imadScript.tab.c" /* yacc.c:1666  */
+#line 79 "imadScript.y" /* yacc.c:1666  */
+    { (yyval.double_val) = (yyvsp[-2].double_val) * (yyvsp[0].double_val); }
+#line 1467 "imadScript.tab.c" /* yacc.c:1666  */
     break;
 
   case 17:
-#line 70 "imadScript.y" /* yacc.c:1666  */
-    { (yyval.double_val) = (yyvsp[0].double_val); }
-#line 1405 "imadScript.tab.c" /* yacc.c:1666  */
+#line 80 "imadScript.y" /* yacc.c:1666  */
+    { (yyval.double_val) = (yyvsp[-1].double_val); }
+#line 1473 "imadScript.tab.c" /* yacc.c:1666  */
     break;
 
   case 18:
-#line 73 "imadScript.y" /* yacc.c:1666  */
+#line 81 "imadScript.y" /* yacc.c:1666  */
+    { (yyval.double_val) = (yyvsp[0].double_val); }
+#line 1479 "imadScript.tab.c" /* yacc.c:1666  */
+    break;
+
+  case 19:
+#line 82 "imadScript.y" /* yacc.c:1666  */
+    {
+                                                                    int result;
+                                                                    result = wasItDeclaredBefore((yyvsp[0].input_var_string));
+                                                                    int indexOfVar;
+                                                                    int valueOfVar = 0;
+                                                                    if(result == 0)
+                                                                    {
+                                                                        printf("ERROR: Wasn't declared before\n");
+                                                                        exit(0);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        printf("Declared Before\n");
+
+                                                                        indexOfVar = getIndexNumber((yyvsp[0].input_var_string));
+                                                                        valueOfVar = values[indexOfVar];
+                                                                    }
+                                                                    
+                                                                    (yyval.double_val) = valueOfVar;
+                                                                }
+#line 1504 "imadScript.tab.c" /* yacc.c:1666  */
+    break;
+
+  case 20:
+#line 104 "imadScript.y" /* yacc.c:1666  */
     {
                                                                     
                                                                     int result;
@@ -1413,7 +1512,8 @@ yyreduce:
 
                                                                     if(result == 0)
                                                                     {
-                                                                        printf("Wasn't declared before\n");
+                                                                        printf("ERROR: Wasn't declared before\n");
+                                                                        exit(0);
                                                                     }
                                                                     else{
                                                                         printf("declared before\n");
@@ -1425,11 +1525,11 @@ yyreduce:
 
                                                                     
                                                                 }
-#line 1429 "imadScript.tab.c" /* yacc.c:1666  */
+#line 1529 "imadScript.tab.c" /* yacc.c:1666  */
     break;
 
-  case 19:
-#line 92 "imadScript.y" /* yacc.c:1666  */
+  case 21:
+#line 124 "imadScript.y" /* yacc.c:1666  */
     {
                                                                     
                                                                     int result1;
@@ -1438,7 +1538,6 @@ yyreduce:
                                                                     if(result1 == 0)
                                                                     {
                                                                         printf("Wasn't declared before\n");
-                                                                        
                                                                     }
                                                                     else{
                                                                         //this works because wasItDeclaredBefore automatically sets 
@@ -1447,65 +1546,37 @@ yyreduce:
                                                                         printf("Var value: %d\n", matchedStringValue);
                                                                     }    
                                                                 }
-#line 1451 "imadScript.tab.c" /* yacc.c:1666  */
+#line 1550 "imadScript.tab.c" /* yacc.c:1666  */
     break;
 
-  case 20:
-#line 109 "imadScript.y" /* yacc.c:1666  */
-    {
-                                                                    int result1;
-                                                                    result1 = wasItDeclaredBefore((yyvsp[-2].input_var_string));
-
-                                                                    int result2;
-                                                                    result2 = wasItDeclaredBefore((yyvsp[0].input_var_string));
-
-                                                                    if(result1 == 0)
-                                                                    {
-                                                                        printf("%s not declared before\n",(yyvsp[-2].input_var_string));
-                                                                    }
-                                                                    else if(result2 == 0)
-                                                                    {
-                                                                        printf("%s not declared before\n",(yyvsp[0].input_var_string));
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        int indexOfRight = getIndexNumber((yyvsp[0].input_var_string));
-                                                                        int indexOfLeft = getIndexNumber((yyvsp[-2].input_var_string));
-
-                                                                        values[indexOfLeft] = values[indexOfRight];
-                                                                    }
-
-                                                                
-                                                                }
-#line 1481 "imadScript.tab.c" /* yacc.c:1666  */
-    break;
-
-  case 21:
-#line 134 "imadScript.y" /* yacc.c:1666  */
+  case 22:
+#line 140 "imadScript.y" /* yacc.c:1666  */
     {
                                                                     printf("Printing symbol and value table:\n\n");
                                                                     int i;
                                                                     for(i = 0; i < current; i++)
                                                                     {
-                                                                        printf("Variable: %s    Value: %d \n",sym[i], values[i]);
+                                                                        printf("Variable: %s    Value: %f \n",sym[i], values[i]);
                                                                     }
                                                                     printf("\n\n");
                                                                 }
-#line 1495 "imadScript.tab.c" /* yacc.c:1666  */
-    break;
-
-  case 24:
-#line 149 "imadScript.y" /* yacc.c:1666  */
-    {printf("Multiple declaration\n");}
-#line 1501 "imadScript.tab.c" /* yacc.c:1666  */
+#line 1564 "imadScript.tab.c" /* yacc.c:1666  */
     break;
 
   case 25:
-#line 150 "imadScript.y" /* yacc.c:1666  */
+#line 155 "imadScript.y" /* yacc.c:1666  */
+    {printf("Multiple declaration\n");}
+#line 1570 "imadScript.tab.c" /* yacc.c:1666  */
+    break;
+
+  case 26:
+#line 156 "imadScript.y" /* yacc.c:1666  */
     {
                                                                     int result;
                                                                     result = wasItDeclaredBefore((yyvsp[0].input_var_string));
-                                                                    printf("$1: %s\n",(yyvsp[0].input_var_string));
+                                                                    
+                                                                    printf("VarName: %s\n",(yyvsp[0].input_var_string));
+                                                                    
                                                                     if(result == 0)
                                                                     {
                                                                         printf("Wasn't declared before\n");
@@ -1524,33 +1595,154 @@ yyreduce:
                                                                         
                                                                     } 
                                                                 }
-#line 1528 "imadScript.tab.c" /* yacc.c:1666  */
-    break;
-
-  case 26:
-#line 174 "imadScript.y" /* yacc.c:1666  */
-    {
-                                                                    printf("Condition Result: %f\n",(yyvsp[-2].double_val));
-                                                                    if((yyvsp[-2].double_val))
-                                                                    {
-                                                                        printIfOpValues();
-                                                                    }
-                                                                    resetIfOpValues();
-                                                                }
-#line 1541 "imadScript.tab.c" /* yacc.c:1666  */
+#line 1599 "imadScript.tab.c" /* yacc.c:1666  */
     break;
 
   case 27:
 #line 182 "imadScript.y" /* yacc.c:1666  */
     {
-
-                                                                    if((yyvsp[-18].double_val))
+                                                                    //single if structure
+                                                                    printf("Value of Argument: %f\n",(yyvsp[-2].double_val));
+                                                                    if((yyvsp[-2].double_val))
                                                                     {
-                                                                        printf("IF \nCondition Result: %f\nExpression Result: %f\n", (yyvsp[-18].double_val), (yyvsp[-15].double_val));
+                                                                        printf("Value of expressions: \n");
+                                                                        printIfOpValues();
                                                                     }
-                                                                    else if((yyvsp[-11].double_val))
+                                                                    resetIfOpValues();
+                                                                }
+#line 1614 "imadScript.tab.c" /* yacc.c:1666  */
+    break;
+
+  case 28:
+#line 192 "imadScript.y" /* yacc.c:1666  */
+    {
+
+                                                                    //if-else structure
+                                                                    if((yyvsp[-9].double_val))
                                                                     {
-                                                                        printf("ELSE IF \nCondition Result: %f\nExpression Result: %f\n", (yyvsp[-11].double_val), (yyvsp[-8].double_val));
+                                                                        printf("Inside if Structure\n");
+                                                                        printf("Value of Argument: %f\n", (yyvsp[-9].double_val));
+                                                                        printf("Value of expression: %f\n",(yyvsp[-6].double_val));
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        printf("Inside if -> default structure\n");
+                                                                        printf("Value of expression: %f\n", (yyvsp[-2].double_val));
+                                                                    }
+                                                                }
+#line 1634 "imadScript.tab.c" /* yacc.c:1666  */
+    break;
+
+  case 29:
+#line 207 "imadScript.y" /* yacc.c:1666  */
+    {
+                                                                    //if (nested if-else) - else structure
+                                                                    if((yyvsp[-17].double_val))
+                                                                    {
+                                                                        printf("Inside if structure\n");
+                                                                        printf("Value of Argument: %f\n", (yyvsp[-17].double_val));
+                                                                        if((yyvsp[-12].double_val))
+                                                                        {
+                                                                            printf("Inside if->if structure\n");
+                                                                            printf("Value of Argument: %f\n", (yyvsp[-13].double_val));
+                                                                            printf("Value of Expression: %f\n", (yyvsp[-10].double_val));
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            printf("Inside if -> (if -> else) structure\n");
+                                                                            printf("Value of expression: %f", (yyvsp[-6].double_val));
+                                                                            
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        printf("Inside if -> (if -> else) -> else structure\n");
+                                                                        printf("Value of expression: %f", (yyvsp[-2].double_val));
+                                                                    }
+                                                                }
+#line 1664 "imadScript.tab.c" /* yacc.c:1666  */
+    break;
+
+  case 30:
+#line 232 "imadScript.y" /* yacc.c:1666  */
+    {
+                                                                    //if - else ( nested if-else ) structure
+                                                                    if((yyvsp[-17].double_val))
+                                                                    {
+                                                                        printf("Inside if structure\n");
+                                                                        printf("Value of Argument: %f\n", (yyvsp[-17].double_val));
+                                                                        printf("Value of expression: %f\n", (yyvsp[-14].double_val));
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        
+                                                                        if((yyvsp[-9].double_val))
+                                                                        {
+                                                                            printf("Inside if -> else -> if structure\n");
+                                                                            printf("Value of Argument: %f\n", (yyvsp[-9].double_val));
+                                                                            printf("Value of Expression: %f\n", (yyvsp[-6].double_val));
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            printf("Inside if -> else -> (if -> else) structure\n");
+                                                                            printf("Value of expression: %f", (yyvsp[-2].double_val));
+                                                                            
+                                                                        }
+                                                                    }
+                                                                }
+#line 1694 "imadScript.tab.c" /* yacc.c:1666  */
+    break;
+
+  case 31:
+#line 257 "imadScript.y" /* yacc.c:1666  */
+    {
+
+                                                                    if((yyvsp[-25].double_val))
+                                                                    {
+                                                                        printf("Inside if structure\n");
+                                                                        printf("Value of Argument: %f\n",(yyvsp[-25].double_val));
+                                                                        if((yyvsp[-22].double_val))
+                                                                        {
+                                                                            printf("Inside if -> if structure\n");
+                                                                            printf("Value of expression: %f\n",(yyvsp[-19].double_val));
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            printf("Inside if -> if -> else structure\n");
+                                                                            printf("Value of expression: %f\n",(yyvsp[-15].double_val));
+                                                                        }
+                                                                    }
+                                                                    else 
+                                                                    {
+                                                                        if((yyvsp[-10].double_val))
+                                                                        {
+                                                                            printf("Inside if -> if -> else -> if structure\n");
+                                                                            printf("Value of argument: %f\n", (yyvsp[-10].double_val));
+                                                                            printf("Value of expression: %f\n",(yyvsp[-7].double_val));
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            printf("Inside if -> if -> else -> else -> if ->  else structure\n");
+                                                                            printf("Value of expression: %f\n",(yyvsp[-3].double_val));
+                                                                        }
+                                                                    }
+
+
+                                                                }
+#line 1733 "imadScript.tab.c" /* yacc.c:1666  */
+    break;
+
+  case 32:
+#line 291 "imadScript.y" /* yacc.c:1666  */
+    {
+
+                                                                    if((yyvsp[-16].double_val))
+                                                                    {
+                                                                        printf("IF \nCondition Result: %f\nExpression Result: %f\n", (yyvsp[-16].double_val), (yyvsp[-13].double_val));
+                                                                    }
+                                                                    else if((yyvsp[-9].double_val))
+                                                                    {
+                                                                        printf("ELSE IF \nCondition Result: %f\nExpression Result: %f\n", (yyvsp[-9].double_val), (yyvsp[-6].double_val));
                                                                     }
                                                                     else
                                                                     {
@@ -1558,62 +1750,113 @@ yyreduce:
                                                                     }
 
                                                                 }
-#line 1562 "imadScript.tab.c" /* yacc.c:1666  */
+#line 1754 "imadScript.tab.c" /* yacc.c:1666  */
     break;
 
-  case 28:
-#line 198 "imadScript.y" /* yacc.c:1666  */
+  case 33:
+#line 307 "imadScript.y" /* yacc.c:1666  */
     {
                                                                     pushIfOpValues((yyvsp[-2].double_val));
                                                                 }
-#line 1570 "imadScript.tab.c" /* yacc.c:1666  */
+#line 1762 "imadScript.tab.c" /* yacc.c:1666  */
     break;
 
-  case 30:
-#line 204 "imadScript.y" /* yacc.c:1666  */
+  case 35:
+#line 313 "imadScript.y" /* yacc.c:1666  */
     {
-                                                                    int result = wasItDeclaredBefore((yyvsp[-7].input_var_string));
+                                                                    int result = wasItDeclaredBefore((yyvsp[-8].input_var_string));
                                                                     if(result)
                                                                     {
-                                                                        int index = getIndexNumber((yyvsp[-7].input_var_string));
-                                                                        float expressionResult = (yyvsp[-1].double_val);
+                                                                        int index = getIndexNumber((yyvsp[-8].input_var_string));
+                                                                        float expressionResult = (yyvsp[-2].double_val);
                                                                         int i;
-                                                                        printf("Exp: %f",(yyvsp[-1].double_val));
-                                                                        if((yyvsp[-5].double_val) < (yyvsp[-3].double_val))
+                                                                        
+                                                                        //printf("Exp: %f\n",$8);
+                                                                        
+                                                                        if((yyvsp[-6].double_val) < (yyvsp[-4].double_val))
                                                                         {
-                                                                            for(i = (yyvsp[-5].double_val); i <= (yyvsp[-3].double_val); i++)
+                                                                            for(i = (yyvsp[-6].double_val); i <= (yyvsp[-4].double_val); i++)
                                                                             {
-                                                                                printf("Expression Result: %f",expressionResult);
+                                                                                printf("Expression Result: %f\n",expressionResult);
                                                                                 printf("Variable Value: %d\n", i);
                                                                                 values[index] = i;
                                                                             }
                                                                         }
-                                                                        else if((yyvsp[-5].double_val) > (yyvsp[-3].double_val))
+                                                                        else if((yyvsp[-6].double_val) > (yyvsp[-4].double_val))
                                                                         {
-                                                                            for(i = (yyvsp[-3].double_val); i >= (yyvsp[-5].double_val); i--)
+                                                                            for(i = (yyvsp[-4].double_val); i >= (yyvsp[-6].double_val); i--)
                                                                             {
-                                                                                printf("Expression Result: %f",expressionResult);
+                                                                                printf("Expression Result: %f\n",expressionResult);
                                                                                 printf("Variable Value: %d\n", i);
                                                                                 values[index] = i;
                                                                             }
                                                                         }
                                                                         else
                                                                         {
-                                                                            printf("Expression Result: %f",expressionResult);
-                                                                            printf("Variable Value: %d\n", (yyvsp[-5].double_val));
-                                                                            values[index] = (yyvsp[-5].double_val);
+                                                                            printf("Expression Result: %f\n",expressionResult);
+                                                                            printf("Variable Value: %f\n", (yyvsp[-6].double_val));
+                                                                            values[index] = (yyvsp[-6].double_val);
                                                                         }
                                                                     }
                                                                     else
                                                                     {
-                                                                        printf("Variable in loop not declared before");
+                                                                        printf("Variable in loop not declared before\n");
+                                                                        
                                                                     }
                                                                 }
-#line 1613 "imadScript.tab.c" /* yacc.c:1666  */
+#line 1808 "imadScript.tab.c" /* yacc.c:1666  */
+    break;
+
+  case 36:
+#line 356 "imadScript.y" /* yacc.c:1666  */
+    {
+                                                                    int result;
+                                                                    result = wasItDeclaredBefore((yyvsp[-3].input_var_string));
+
+                                                                    if(result == 0)
+                                                                    {
+                                                                        printf("ERROR: wasn't declared before\n");
+                                                                        exit(0);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        int indexOfVar;
+                                                                        printf("Was declared before\n");
+                                                                        indexOfVar = getIndexNumber((yyvsp[-3].input_var_string));
+                                                                        switchValue = values[indexOfVar];
+                                                                        printf("Switch Value: %f\n", switchValue);
+                                                                    }
+                                                                }
+#line 1831 "imadScript.tab.c" /* yacc.c:1666  */
+    break;
+
+  case 37:
+#line 376 "imadScript.y" /* yacc.c:1666  */
+    {
+                                                                    if((yyvsp[-6].double_val) == switchValue && printedCaseBefore == 0)
+                                                                    {
+                                                                        printf("Case Matched: %f\n", (yyvsp[-6].double_val));
+                                                                        printf("Value of Expression: %f\n", (yyvsp[-3].double_val));
+                                                                        printedCaseBefore = 1;
+                                                                    }
+                                                                }
+#line 1844 "imadScript.tab.c" /* yacc.c:1666  */
+    break;
+
+  case 38:
+#line 384 "imadScript.y" /* yacc.c:1666  */
+    {
+                                                                    if(printedCaseBefore == 0)
+                                                                    {
+                                                                        printf("Default case matched\n");
+                                                                        printf("Value of expression: %f\n", (yyvsp[-2].double_val));
+                                                                    }
+                                                                }
+#line 1856 "imadScript.tab.c" /* yacc.c:1666  */
     break;
 
 
-#line 1617 "imadScript.tab.c" /* yacc.c:1666  */
+#line 1860 "imadScript.tab.c" /* yacc.c:1666  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1841,18 +2084,20 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 244 "imadScript.y" /* yacc.c:1910  */
+#line 393 "imadScript.y" /* yacc.c:1910  */
 
 
 int wasItDeclaredBefore(char string[1000])
 {
-    printf("WIDB: ArgumentString: %s %d\n", string, strlen(string));
+    //printf("WIDB: ArgumentString: %s %lu\n", string, strlen(string));
+
     //returns 0 if not delcared before
     //returns 1 if declared before
     int i;
     for(i = 0; i < current; i++)
     {
-        printf("WIDB: symString: %s symLength: %d  Value: %d  i: %d   current: %d\n", sym[i], strlen(sym[i]), values[i], i, current);
+        //printf("WIDB: symString: %s symLength: %lu  Value: %f  i: %d   current: %d\n", sym[i], strlen(sym[i]), values[i], i, current);
+
         if(strlen(string) == strlen(sym[i]))
         {
             int result2;
@@ -1911,14 +2156,16 @@ int getIndexNumber(char string[1000])
     int i;
     for(int i = 0; i < current; i++)
     {
-        printf("GIN: input: %s  symstr: %s\n",string,sym[i]);
+        //printf("GIN: input: %s  symstr: %s\n",string,sym[i]);
+
         //check if input and sym[i] has same length
         //because, by default matchStrings() takes that its two argument strings have same length
         if(strlen(string) == strlen(sym[i]))
         {
             if(matchStrings(string, sym[i]))
             {
-                printf("GIN: %d\n",i);
+                //printf("GIN: %d\n",i);
+
                 return i;
             }
         }

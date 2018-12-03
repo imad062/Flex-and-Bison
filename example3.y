@@ -12,12 +12,16 @@
 }
 
 %token <int_token> EVEN ODD
-%start root_node
+%start program
 
 %%
 
-root_node: EVEN {printf("Even number found\n"); return 0;}
-	     | ODD  {printf("Odd number found\n"); return 0;}
+program: program root_node
+       | root_node
+       ;
+
+root_node: EVEN {printf("Even number found\n");}
+	     | ODD  {printf("Odd number found\n");}
 	     ;
 
 %%

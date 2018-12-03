@@ -1,0 +1,67 @@
+VarName: a
+Wasn't declared before
+VarName: b
+Wasn't declared before
+VarName: c
+Wasn't declared before
+Multiple declaration
+declared before
+declared before
+Declared Before
+Declared Before
+declared before
+Var value: 80
+Expression: 30.000000
+Expression: 10.000000
+Expression: 360.000000
+Expression: 1.200000
+declared before
+Var value: 1440
+Value of Argument: 1.000000
+Value of expressions: 
+1.000000
+2.000000
+3.000000
+Declared Before
+Inside if Structure
+Value of Argument: 20.000000
+Value of expression: 4.000000
+Declared Before
+Inside if structure
+Value of Argument: 60.000000
+Inside if->if structure
+Value of Argument: 1.000000
+Value of Expression: 6.000000
+Inside if -> else -> if structure
+Value of Argument: 1.000000
+Value of Expression: 10.000000
+Inside if -> if -> else -> else -> if ->  else structure
+Value of expression: 0.000000
+Declared Before
+IF 
+Condition Result: 60.000000
+Expression Result: 16.000000
+VarName: i
+Wasn't declared before
+Expression Result: 11.000000
+Variable Value: 0
+Expression Result: 11.000000
+Variable Value: 1
+Expression Result: 11.000000
+Variable Value: 2
+Expression Result: 11.000000
+Variable Value: 3
+Expression Result: 11.000000
+Variable Value: 4
+Expression Result: 11.000000
+Variable Value: 5
+Expression Result: 11.000000
+Variable Value: 6
+Expression Result: 11.000000
+Variable Value: 7
+Expression Result: 11.000000
+Variable Value: 8
+Expression Result: 11.000000
+Variable Value: 9
+Expression Result: 11.000000
+Variable Value: 10

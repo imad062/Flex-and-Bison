@@ -7,14 +7,12 @@
 %}
 
 %union{
-    int int_val;
     double double_val;
 }
 
 %define parse.error verbose
 
-%token <int_val> PLUS MINUS MUL DIV LPAREN RPAREN END
-%token <double_val> VAR
+%token <double_val> PLUS MINUS MUL DIV LPAREN RPAREN END NUM
 
 %type <double_val> expr root_node program
 
@@ -26,7 +24,7 @@ program: program root_node
        | root_node
        ;
 
-root_node: expr END	{$$=$1; printf("Answer: %f\n", $$);}
+root_node: expr END	{printf("Answer: %f\n", $1);}
 	 ;
 
 expr: LPAREN expr RPAREN	{$$=$2;}
@@ -34,7 +32,7 @@ expr: LPAREN expr RPAREN	{$$=$2;}
     | expr MINUS expr		{$$=$1-$3;}
     | expr MUL expr		{$$=$1*$3;}
     | expr DIV expr		{$$=$1/$3;}
-    | VAR      			{$$=$1;}
+    | NUM     			{$$=$1;}
     ;
 
 %%

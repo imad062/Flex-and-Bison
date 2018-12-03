@@ -10,9 +10,9 @@
 
 %%
 
-"hello".*"world;" {printf("Welcome!\n");}
-"quit;"                   {printf("Good Bye\n"); exit(0);}
-[ \n\t]                   {;}
+"hello".*"world;"       {printf("Welcome!\n");}
+"quit;"                 {printf("Good Bye\n"); exit(0);}
+[ \n\t]+                {;}
 
 %%
 
@@ -21,10 +21,10 @@ void yyerror(char* msg){
 }
 
 int yywrap(void){
-    return 1;
+    
 }
 
 int main(void){
     yylex();
-    return 1;
+    
 }
